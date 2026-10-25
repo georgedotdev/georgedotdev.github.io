@@ -107,7 +107,8 @@ a:hover { text-decoration-color: var(--ink); }
 	padding: 14px;
 	border: 1px solid var(--rule);
 }
-.arena-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 2px 4px 10px; }
+.arena-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; margin: 2px 4px 10px; }
+.arena-head h2 { white-space: nowrap; }
 .arena-head h2 { font-size: 17px; margin: 0; font-weight: 700; }
 .arena-head p { margin: 0; font-size: 14px; color: var(--stone-dark); }
 .stage { position: relative; border-radius: 10px; overflow: hidden; background: #BDBCBF; touch-action: manipulation; }
@@ -243,6 +244,7 @@ footer { padding: 0 0 40px; font-size: 14px; color: var(--stone-dark); display: 
 	body { font-size: 17px; }
 	.top nav { display: none; }
 	.tally { margin-left: 0; width: 100%; }
+	.output-label span:last-child { display: none; }
 	.diff { grid-template-columns: minmax(0, 1fr); }
 	.diff .arrow { width: auto; }
 	.diff .arrow b { transform: rotate(90deg); display: inline-block; }
@@ -326,7 +328,7 @@ footer { padding: 0 0 40px; font-size: 14px; color: var(--stone-dark); display: 
 			</div>
 			<div>
 				<figure class="clip">
-					<img src="media/combat.gif" alt="Studio recording: a four-hit combo on training dummies, with damage numbers and a knockback finisher." loading="lazy" onerror="this.closest('figure').hidden = true">
+					<img src="media/combat.gif" alt="Studio recording: a four-hit combo on training dummies, with damage numbers and a knockback finisher." onerror="this.closest('figure').hidden = true">
 					<figcaption>Recorded in Roblox Studio.</figcaption>
 				</figure>
 <pre class="code"><code><span class="c">-- The client cannot claim hits. It can only ask to swing.</span>
@@ -372,7 +374,7 @@ footer { padding: 0 0 40px; font-size: 14px; color: var(--stone-dark); display: 
 			</div>
 			<div>
 				<figure class="clip">
-					<img src="media/data.gif" alt="Studio recording: a legacy save upgraded from version 0 to version 3 in the Output window." loading="lazy" onerror="this.closest('figure').hidden = true">
+					<img src="media/data.gif" alt="Studio recording: a legacy save upgraded from version 0 to version 3 in the Output window." onerror="this.closest('figure').hidden = true">
 					<figcaption>Recorded in Roblox Studio.</figcaption>
 				</figure>
 				<div class="diff">
@@ -426,7 +428,7 @@ footer { padding: 0 0 40px; font-size: 14px; color: var(--stone-dark); display: 
 			</div>
 			<div>
 				<figure class="clip">
-					<img src="media/economy.gif" alt="Studio recording: buying generators in the idle economy panel and a welcome-back toast for offline earnings." loading="lazy" onerror="this.closest('figure').hidden = true">
+					<img src="media/economy.gif" alt="Studio recording: buying generators in the idle economy panel and a welcome-back toast for offline earnings." onerror="this.closest('figure').hidden = true">
 					<figcaption>Recorded in Roblox Studio.</figcaption>
 				</figure>
 				<div class="offline">
