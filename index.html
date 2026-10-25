@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>George Mathew — Roblox gameplay programmer</title>
+<meta name="description" content="Luau scripter for hire. Server-authoritative combat, ProfileStore data with migrations, and idle economies. Tested code, Rojo and Git workflow.">
+<meta property="og:title" content="George Mathew — Roblox gameplay programmer">
+<meta property="og:description" content="Server-authoritative Luau systems with tests. Try the live combat demo.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://georgedotdev.github.io/">
+<meta name="theme-color" content="#F5CD30">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='9' width='26' height='20' rx='3' fill='%23F5CD30'/%3E%3Crect x='7' y='4' width='7' height='6' rx='2' fill='%23F5CD30'/%3E%3Crect x='18' y='4' width='7' height='6' rx='2' fill='%23F5CD30'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+	/* Roblox BrickColors */
+	--paper: #F8F8F8;          /* Institutional white */
+	--ink: #1B2A35;            /* Black */
+	--stone: #A3A2A5;          /* Medium stone grey */
+	--stone-dark: #635F62;     /* Dark stone grey */
+	--yellow: #F5CD30;         /* Bright yellow */
+	--blue: #0D99FF;           /* Studio selection */
+	--blue-ink: #0A6FBF;       /* selection blue, darkened for text contrast */
+	--red: #C4281C;            /* Bright red */
+	--panel: #EDEDED;
+	--rule: #D6D6D8;
+	--code-bg: #1B2A35;
+	--code-ink: #E9EEF2;
+
+	--display: "Bricolage Grotesque", system-ui, sans-serif;
+	--mono: "JetBrains Mono", ui-monospace, monospace;
+
+	--measure: 64ch;
+	--gutter: clamp(16px, 4vw, 48px);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+	margin: 0;
+	background: var(--paper);
+	color: var(--ink);
+	font-family: var(--display);
+	font-variation-settings: "opsz" 16;
+	font-size: 18px;
+	line-height: 1.55;
+	overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { color: var(--ink); text-decoration-color: var(--yellow); text-decoration-thickness: 3px; text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--ink); }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 var(--gutter); }
+
+/* ---------- Top bar ---------- */
+.top {
+	display: flex; align-items: center; justify-content: space-between; gap: 16px;
+	padding: 20px 0;
+}
+.mark { display: flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; font-size: 17px; }
+.mark svg { width: 28px; height: 28px; }
+.top nav { display: flex; gap: 20px; font-size: 16px; }
+.top nav a { text-decoration: none; color: var(--stone-dark); }
+.top nav a:hover { color: var(--ink); }
+
+/* ---------- Hero ---------- */
+.hero {
+	display: grid;
+	grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+	gap: clamp(24px, 4vw, 56px);
+	align-items: start;
+	padding: clamp(24px, 6vw, 72px) 0 clamp(40px, 6vw, 80px);
+}
+.hero h1 {
+	font-size: clamp(40px, 6.2vw, 76px);
+	font-variation-settings: "opsz" 96, "wdth" 82;
+	font-weight: 750;
+	line-height: 0.98;
+	letter-spacing: -0.02em;
+	margin: 0 0 24px;
+}
+.hero .lede { font-size: 20px; max-width: 34ch; margin: 0 0 28px; }
+.hero .lede strong { font-weight: 650; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn {
+	display: inline-flex; align-items: center; gap: 8px;
+	font: inherit; font-size: 16px; font-weight: 650;
+	padding: 12px 18px; border-radius: 8px;
+	border: 2px solid var(--ink);
+	background: var(--ink); color: var(--paper);
+	text-decoration: none; cursor: pointer;
+}
+.btn:hover { background: #2B3D4A; }
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn.ghost:hover { background: var(--panel); }
+.facts { margin: 32px 0 0; padding: 0; list-style: none; font-size: 15px; color: var(--stone-dark); display: grid; gap: 6px; }
+.facts b { color: var(--ink); font-weight: 650; }
+
+/* ---------- Arena ---------- */
+.arena {
+	background: var(--panel);
+	border-radius: 14px;
+	padding: 14px;
+	border: 1px solid var(--rule);
+}
+.arena-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 2px 4px 10px; }
+.arena-head h2 { font-size: 17px; margin: 0; font-weight: 700; }
+.arena-head p { margin: 0; font-size: 14px; color: var(--stone-dark); }
+.stage { position: relative; border-radius: 10px; overflow: hidden; background: #BDBCBF; touch-action: manipulation; }
+.stage canvas { display: block; width: 100%; height: auto; cursor: crosshair; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 10px; align-items: center; }
+.controls .btn { padding: 9px 14px; font-size: 15px; }
+.btn.exploit { background: var(--red); border-color: var(--red); }
+.btn.exploit:hover { background: #A21F15; }
+.tally { margin-left: auto; display: flex; gap: 14px; font-size: 14px; color: var(--stone-dark); }
+.tally b { font-variant-numeric: tabular-nums; color: var(--ink); }
+.tally .ok b { color: var(--blue-ink); }
+.tally .no b { color: var(--red); }
+
+.output {
+	background: #fff;
+	border: 1px solid var(--rule);
+	border-radius: 8px;
+	height: 168px;
+	overflow-y: auto;
+	font-family: var(--mono);
+	font-size: 12.5px;
+	line-height: 1.6;
+	padding: 8px 10px;
+	margin: 0;
+	list-style: none;
+}
+.output li { white-space: pre-wrap; word-break: break-word; }
+.output .t { color: var(--stone); margin-right: 8px; }
+.output .ok { color: var(--blue-ink); }
+.output .no { color: var(--red); }
+.output .info { color: var(--stone-dark); }
+.output-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--stone-dark); margin: 0 2px 4px; }
+
+/* ---------- Sections ---------- */
+.system {
+	border-top: 2px solid var(--ink);
+	padding: clamp(40px, 6vw, 72px) 0;
+	display: grid;
+	grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+	gap: clamp(24px, 4vw, 56px);
+}
+.system h2 {
+	font-size: clamp(30px, 4vw, 46px);
+	font-variation-settings: "opsz" 72, "wdth" 85;
+	font-weight: 720;
+	line-height: 1.04;
+	letter-spacing: -0.015em;
+	margin: 0 0 16px;
+}
+.system p { max-width: var(--measure); margin: 0 0 14px; }
+.system ul.points { padding: 0; margin: 18px 0 0; list-style: none; display: grid; gap: 12px; }
+.system ul.points li { padding-left: 22px; position: relative; max-width: 52ch; }
+.system ul.points li::before {
+	content: ""; position: absolute; left: 0; top: 0.5em;
+	width: 10px; height: 10px; border-radius: 2px; background: var(--yellow);
+	box-shadow: inset 0 0 0 1.5px rgba(27,42,53,.35);
+}
+.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 22px; font-size: 15px; }
+.meta a { font-weight: 600; }
+
+pre.code {
+	margin: 0;
+	background: var(--code-bg);
+	color: var(--code-ink);
+	border-radius: 10px;
+	padding: 16px 18px;
+	overflow-x: auto;
+	font-family: var(--mono);
+	font-size: 13px;
+	line-height: 1.6;
+	tab-size: 4;
+}
+pre.code .c { color: #8A9AA8; }
+pre.code .k { color: #F5CD30; }
+pre.code .s { color: #8FD1FF; }
+pre.code .n { color: #FFB38A; }
+.code-cap { font-size: 14px; color: var(--stone-dark); margin: 8px 2px 0; }
+
+figure.clip { margin: 0 0 18px; }
+figure.clip img { border-radius: 10px; border: 1px solid var(--rule); width: 100%; }
+figure.clip figcaption { font-size: 14px; color: var(--stone-dark); margin-top: 6px; }
+
+/* Migration diff */
+.diff { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: stretch; }
+.diff pre.code { font-size: 12.5px; }
+.diff .arrow { align-self: center; font-size: 13px; color: var(--stone-dark); text-align: center; width: 64px; }
+.diff .arrow b { display: block; font-size: 22px; color: var(--ink); line-height: 1; }
+.diff-label { font-size: 13px; color: var(--stone-dark); margin: 0 0 6px; }
+
+/* Offline slider */
+.offline { background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; padding: 18px; margin-top: 14px; }
+.offline label { display: block; font-weight: 600; margin-bottom: 8px; }
+.offline input[type=range] { width: 100%; accent-color: var(--ink); }
+.offline-out { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.offline-out div { font-size: 14px; color: var(--stone-dark); }
+.offline-out b { display: block; font-size: 24px; color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 700; }
+.offline-out .capped b { color: var(--red); }
+.bar { height: 10px; background: #fff; border: 1px solid var(--rule); border-radius: 6px; margin-top: 14px; position: relative; overflow: hidden; }
+.bar span { position: absolute; inset: 0 auto 0 0; background: var(--yellow); }
+.bar i { position: absolute; top: -1px; bottom: -1px; width: 2px; background: var(--red); }
+
+/* ---------- Toolkit + contact ---------- */
+.toolkit { border-top: 2px solid var(--ink); padding: clamp(40px, 6vw, 72px) 0; }
+.toolkit h2, .contact h2 { font-size: clamp(28px, 3.4vw, 40px); font-variation-settings: "opsz" 72, "wdth" 85; font-weight: 720; margin: 0 0 18px; letter-spacing: -0.01em; }
+.tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 28px 40px; }
+.tools h3 { font-size: 18px; margin: 0 0 6px; }
+.tools p { margin: 0; font-size: 16px; color: var(--stone-dark); max-width: 40ch; }
+
+.contact {
+	background: var(--yellow);
+	border-radius: 16px;
+	padding: clamp(28px, 5vw, 56px);
+	margin: 0 0 48px;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 24px;
+	align-items: end;
+}
+.contact p { margin: 0; max-width: 46ch; font-size: 19px; }
+.contact .actions { justify-content: flex-end; }
+.contact .btn.ghost { border-color: var(--ink); }
+.contact .btn.ghost:hover { background: rgba(255,255,255,.35); }
+
+footer { padding: 0 0 40px; font-size: 14px; color: var(--stone-dark); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+	.hero, .system { grid-template-columns: minmax(0, 1fr); }
+	.contact { grid-template-columns: minmax(0, 1fr); }
+	.contact .actions { justify-content: flex-start; }
+}
+@media (max-width: 600px) {
+	body { font-size: 17px; }
+	.top nav { display: none; }
+	.tally { margin-left: 0; width: 100%; }
+	.diff { grid-template-columns: minmax(0, 1fr); }
+	.diff .arrow { width: auto; }
+	.diff .arrow b { transform: rotate(90deg); display: inline-block; }
+	.offline-out b { font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+	* { scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+	<header class="top">
+		<a class="mark" href="#top" aria-label="George Mathew, home">
+			<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="11" width="26" height="18" rx="3" fill="#F5CD30" stroke="#1B2A35" stroke-width="2"/><rect x="7" y="5" width="7" height="7" rx="2" fill="#F5CD30" stroke="#1B2A35" stroke-width="2"/><rect x="18" y="5" width="7" height="7" rx="2" fill="#F5CD30" stroke="#1B2A35" stroke-width="2"/></svg>
+			George Mathew
+		</a>
+		<nav aria-label="Sections">
+			<a href="#combat">Combat</a>
+			<a href="#data">Data</a>
+			<a href="#economy">Economy</a>
+			<a href="#contact">Hire me</a>
+		</nav>
+	</header>
+
+	<main id="top">
+		<section class="hero">
+			<div>
+				<h1>Roblox systems that exploiters can't break.</h1>
+				<p class="lede">I'm a Luau scripter. I build <strong>server-authoritative</strong> combat, data and economy systems, with tests that run on every push.</p>
+				<div class="actions">
+					<a class="btn" href="#contact">Hire me for a commission</a>
+					<a class="btn ghost" href="https://github.com/georgedotdev/roblox-systems">Read the code</a>
+				</div>
+				<ul class="facts">
+					<li><b>61 unit tests</b> run in GitHub Actions on every commit</li>
+					<li><b>Rojo, Git, Wally, selene, StyLua</b> — code lives in files, not in a place</li>
+					<li><b>CS student at VIT Vellore</b>; interned on data migration tooling at Intertec Systems</li>
+				</ul>
+			</div>
+
+			<div class="arena" aria-labelledby="arena-title">
+				<div class="arena-head">
+					<h2 id="arena-title">Try to break it</h2>
+					<p>Click or tap the arena to swing.</p>
+				</div>
+				<div class="stage">
+					<canvas id="arena" width="720" height="380" aria-label="Top-down combat arena. Click to swing toward the pointer." role="img"></canvas>
+				</div>
+				<div class="controls">
+					<button class="btn exploit" id="spam" type="button">Fire 200 requests at once</button>
+					<button class="btn ghost" id="reset" type="button">Reset</button>
+					<div class="tally" aria-live="polite">
+						<span>Sent <b id="sent">0</b></span>
+						<span class="ok">Hits <b id="accepted">0</b></span>
+						<span class="no">Blocked <b id="blocked">0</b></span>
+					</div>
+				</div>
+				<div class="output-label"><span>Server output</span><span>Same rules as the Luau code, ported to JS</span></div>
+				<ol class="output" id="log" aria-live="off"></ol>
+			</div>
+		</section>
+
+		<section class="system" id="combat" aria-labelledby="combat-title">
+			<div>
+				<h2 id="combat-title">Server-authoritative melee combat</h2>
+				<p>The client sends one thing: "I want to swing, aiming this way." It never says who it hit or for how much. The server checks the request, picks targets from its own positions, and applies damage.</p>
+				<ul class="points">
+					<li>Every remote payload is type-checked. NaN, wrong types, extra keys and metatables are dropped.</li>
+					<li>A token-bucket rate limiter per player. A spam script gets a few swings, then nothing.</li>
+					<li>Cooldowns and combo state use server time. A four-hit combo with a finisher, knockback and end lag.</li>
+					<li>The client's aim is trusted only within 75° of where the server sees the character facing.</li>
+					<li>Latency slack adds a little range for laggy players, and it is capped so it can't be abused.</li>
+				</ul>
+				<div class="meta">
+					<a href="https://github.com/georgedotdev/roblox-systems/blob/main/src/server/Services/CombatService.luau">CombatService.luau</a>
+					<a href="https://github.com/georgedotdev/roblox-systems/blob/main/src/shared/Combat/HitValidation.luau">HitValidation.luau</a>
+					<a href="https://github.com/georgedotdev/roblox-systems/blob/main/tests/combat_spec.luau">28 combat tests</a>
+				</div>
+			</div>
+			<div>
+				<figure class="clip">
+					<img src="media/combat.gif" alt="Studio recording: a four-hit combo on training dummies, with damage numbers and a knockback finisher." loading="lazy" onerror="this.closest('figure').hidden = true">
+					<figcaption>Recorded in Roblox Studio.</figcaption>
+				</figure>
+<pre class="code"><code><span class="c">-- The client cannot claim hits. It can only ask to swing.</span>
+<span class="k">local</span> validateRequest = Guard.record({
+	action = Guard.literal(<span class="s">"Swing"</span>),
+	aim = Guard.vector3(<span class="n">0.5</span>, <span class="n">2</span>),
+})
+
+<span class="k">local function</span> onCombatRequest(player, payload)
+	<span class="k">if not</span> limiter:take(player) <span class="k">then return end</span>
+	<span class="k">if not</span> validateRequest(payload) <span class="k">then return end</span>
+
+	<span class="k">local</span> now = Workspace:GetServerTimeNow()
+	<span class="k">local</span> swing = HitValidation.tryStartSwing(state, weapon, now)
+	<span class="k">if not</span> swing.ok <span class="k">then return end</span>
+
+	<span class="c">-- Targets come from server positions, not from the client.</span>
+	<span class="k">local</span> facing = HitValidation.resolveAim(root.CFrame.LookVector, payload.aim, <span class="n">75</span>)
+	<span class="k">local</span> targets = HitValidation.selectTargets(root.Position, facing, findCandidates(...), weapon, <span class="n">4</span>)
+	...
+<span class="k">end</span></code></pre>
+				<p class="code-cap">Trimmed from CombatService.luau.</p>
+			</div>
+		</section>
+
+		<section class="system" id="data" aria-labelledby="data-title">
+			<div>
+				<h2 id="data-title">Player data with ProfileStore and migrations</h2>
+				<p>Games change their save format. Old players still have old saves. This system upgrades any saved version to the current one, step by step, when the player joins.</p>
+				<ul class="points">
+					<li>Session locking with ProfileStore, so the same data is never live on two servers. No item dupes.</li>
+					<li>Migrations run on a copy. If one step fails, the original save is untouched.</li>
+					<li>Data from a newer server version is refused, never downgraded. The player rejoins a newer server.</li>
+					<li>Developer products are granted exactly once: the receipt id is saved with the reward.</li>
+					<li>Migrations run before Reconcile. Otherwise Reconcile stamps the new version on old data and every step is skipped.</li>
+				</ul>
+				<div class="meta">
+					<a href="https://github.com/georgedotdev/roblox-systems/blob/main/src/shared/Data/Migrations.luau">Migrations.luau</a>
+					<a href="https://github.com/georgedotdev/roblox-systems/blob/main/src/server/Services/DataService.luau">DataService.luau</a>
+					<a href="https://github.com/georgedotdev/roblox-systems/blob/main/src/server/Services/ReceiptService.luau">ReceiptService.luau</a>
+					<a href="https://github.com/georgedotdev/roblox-systems/blob/main/tests/migrations_spec.luau">13 data tests</a>
+				</div>
+			</div>
+			<div>
+				<figure class="clip">
+					<img src="media/data.gif" alt="Studio recording: a legacy save upgraded from version 0 to version 3 in the Output window." loading="lazy" onerror="this.closest('figure').hidden = true">
+					<figcaption>Recorded in Roblox Studio.</figcaption>
+				</figure>
+				<div class="diff">
+					<div>
+						<p class="diff-label">A save from 2023 (no version)</p>
+<pre class="code"><code>{
+  Coins = <span class="n">250</span>,
+  Items = {
+    <span class="s">"Sword"</span>,
+    <span class="s">"Sword"</span>,
+    <span class="s">"Shield"</span>,
+  },
+  Kills = <span class="n">4</span>,
+}</code></pre>
+					</div>
+					<div class="arrow"><b>→</b>v0 to v3</div>
+					<div>
+						<p class="diff-label">After Migrations.run</p>
+<pre class="code"><code>{
+  Version = <span class="n">3</span>,
+  Cash = <span class="n">250</span>,
+  LifetimeCash = <span class="n">250</span>,
+  Inventory = {
+    Sword = <span class="n">2</span>, Shield = <span class="n">1</span>,
+  },
+  Stats = { Kills = <span class="n">4</span>, Deaths = <span class="n">0</span> },
+  Settings = { ... },
+  <span class="c">-- + Prestige, Generators, ...</span>
+}</code></pre>
+					</div>
+				</div>
+				<p class="code-cap">This exact case is a unit test in migrations_spec.luau.</p>
+			</div>
+		</section>
+
+		<section class="system" id="economy" aria-labelledby="economy-title">
+			<div>
+				<h2 id="economy-title">Idle economy with offline earnings</h2>
+				<p>Six generators with exponential prices, milestone multipliers, prestige, a paid 2x boost and earnings while away. The server owns the cash. The client only shows it.</p>
+				<ul class="points">
+					<li>Buy x1, x10 or max. "Max" uses the closed form of the geometric series, so it is instant at any amount.</li>
+					<li>The last-online time is written right before every save. A server crash loses at most one autosave of progress.</li>
+					<li>A missing timestamp or a clock that went backwards earns nothing.</li>
+					<li>The cash counter is interpolated on the client between server updates, so it ticks smoothly.</li>
+				</ul>
+				<div class="meta">
+					<a href="https://github.com/georgedotdev/roblox-systems/blob/main/src/shared/Economy/Economy.luau">Economy.luau</a>
+					<a href="https://github.com/georgedotdev/roblox-systems/blob/main/src/server/Services/EconomyService.luau">EconomyService.luau</a>
+					<a href="https://github.com/georgedotdev/roblox-systems/blob/main/tests/economy_spec.luau">20 economy tests</a>
+				</div>
+			</div>
+			<div>
+				<figure class="clip">
+					<img src="media/economy.gif" alt="Studio recording: buying generators in the idle economy panel and a welcome-back toast for offline earnings." loading="lazy" onerror="this.closest('figure').hidden = true">
+					<figcaption>Recorded in Roblox Studio.</figcaption>
+				</figure>
+				<div class="offline">
+					<label for="away">Time away: <span id="away-label">2h 00m</span></label>
+					<input id="away" type="range" min="0" max="86400" step="600" value="7200" aria-describedby="away-help">
+					<p id="away-help" class="code-cap" style="margin:6px 0 0">For a player earning 1.2K cash per second. Same formula as <code>Economy.offlineEarnings</code>.</p>
+					<div class="bar" aria-hidden="true"><span id="away-bar"></span><i id="away-cap"></i></div>
+					<div class="offline-out">
+						<div>Counted<b id="out-counted">2h 00m</b></div>
+						<div>Earned<b id="out-earned">4.32M</b></div>
+						<div id="out-note-wrap">Rule<b id="out-note">50% rate</b></div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="toolkit" aria-labelledby="toolkit-title">
+			<h2 id="toolkit-title">How I work</h2>
+			<div class="tools">
+				<div><h3>Code in files</h3><p>Rojo syncs the project into Studio. Everything is in Git, so you can review every change.</p></div>
+				<div><h3>Tests before handover</h3><p>Game logic is kept in pure modules. Lune runs the tests in CI, outside Studio.</p></div>
+				<div><h3>Typed, linted Luau</h3><p><code>--!strict</code> types, selene for lint and StyLua for formatting. No surprises for the next scripter.</p></div>
+				<div><h3>Clear scope</h3><p>We agree on the features before I start. You get a working place file and short notes on how to extend it.</p></div>
+			</div>
+		</section>
+
+		<section class="contact" id="contact" aria-labelledby="contact-title">
+			<div>
+				<h2 id="contact-title">Commissions are open</h2>
+				<p>Combat, data saving, economies, UI scripting, or fixing an existing system. Tell me what you need and your deadline. I reply within a day.</p>
+			</div>
+			<div class="actions" id="contact-links">
+				<a class="btn" href="https://github.com/georgedotdev">GitHub</a>
+			</div>
+		</section>
+	</main>
+
+	<footer>
+		<span>George Mathew</span>
+		<span>Hosted on GitHub Pages</span>
+	</footer>
+</div>
+
+<script>
+/* ---------- Contact links: fill in what you want to show ---------- */
+const CONTACT = {
+	discord: "",       // e.g. "georgedotdev" — shown as a copy-to-clipboard button
+	devforum: "https://devforum.roblox.com/u/coldfeetgamer7",
+	email: "georgemathew.com@gmail.com",
+};
+
+(function contactLinks() {
+	const box = document.getElementById("contact-links");
+	const add = (label, href, ghost = true) => {
+		const a = document.createElement("a");
+		a.className = ghost ? "btn ghost" : "btn";
+		a.textContent = label;
+		a.href = href;
+		box.prepend(a);
+		return a;
+	};
+	if (CONTACT.devforum) add("DevForum", CONTACT.devforum);
+	if (CONTACT.email) add("Email me", "mailto:" + CONTACT.email);
+	if (CONTACT.discord) {
+		const b = document.createElement("button");
+		b.type = "button";
+		b.className = "btn";
+		b.textContent = "Discord: " + CONTACT.discord;
+		b.addEventListener("click", async () => {
+			try { await navigator.clipboard.writeText(CONTACT.discord); b.textContent = "Copied " + CONTACT.discord; }
+			catch { b.textContent = "Discord: " + CONTACT.discord; }
+		});
+		box.prepend(b);
+		box.querySelector('a[href^="https://github.com"]').className = "btn ghost";
+	}
+})();
+
+/* ---------- Number formatting (port of NumberFormat.luau) ---------- */
+const SUFFIXES = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"];
+function abbreviate(n) {
+	if (n < 1000) return String(Math.floor(n));
+	let tier = Math.floor(Math.log10(n) / 3);
+	let scaled = n / 10 ** (tier * 3);
+	let decimals = scaled >= 100 ? 0 : scaled >= 10 ? 1 : 2;
+	let f = 10 ** decimals;
+	let r = Math.floor(scaled * f + 1e-9) / f;
+	if (r >= 1000) { tier += 1; r /= 1000; decimals = 2; }
+	return String(Number(r.toFixed(decimals))) + SUFFIXES[tier];
+}
+function duration(s) {
+	s = Math.max(0, Math.floor(s));
+	const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+	if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m`;
+	if (m > 0) return `${m}m ${String(sec).padStart(2, "0")}s`;
+	return `${sec}s`;
+}
+
+/* ---------- Offline earnings slider (port of Economy.offlineEarnings) ---------- */
+(function offline() {
+	const RATE = 1200, EFFICIENCY = 0.5, CAP = 8 * 3600, MAX = 86400;
+	const input = document.getElementById("away");
+	const label = document.getElementById("away-label");
+	const bar = document.getElementById("away-bar");
+	const capMark = document.getElementById("away-cap");
+	const counted = document.getElementById("out-counted");
+	const earned = document.getElementById("out-earned");
+	const note = document.getElementById("out-note");
+	const noteWrap = document.getElementById("out-note-wrap");
+	capMark.style.left = (CAP / MAX * 100) + "%";
+	function update() {
+		const away = Number(input.value);
+		const seconds = Math.min(away, CAP);
+		label.textContent = duration(away);
+		counted.textContent = duration(seconds);
+		earned.textContent = abbreviate(RATE * seconds * EFFICIENCY);
+		bar.style.width = (seconds / MAX * 100) + "%";
+		const capped = away > CAP;
+		note.textContent = capped ? "8h cap hit" : "50% rate";
+		noteWrap.classList.toggle("capped", capped);
+	}
+	input.addEventListener("input", update);
+	update();
+})();
+
+/* ---------- Combat arena (port of HitValidation + RateLimiter + Guard) ---------- */
+(function arena() {
+	const canvas = document.getElementById("arena");
+	const ctx = canvas.getContext("2d");
+	const logEl = document.getElementById("log");
+	const sentEl = document.getElementById("sent");
+	const accEl = document.getElementById("accepted");
+	const blkEl = document.getElementById("blocked");
+	const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+	// Config mirrors CombatConfig.luau (Fists) and CombatConfig.Network.
+	const WEAPON = { combo: [6, 6, 8, 12], range: 6, arc: 100, cooldown: 0.32, window: 0.9, endLag: 0.8 };
+	const NET = { rate: 6, burst: 3, tolerance: 0.05 };
+	const STUD = 20;               // pixels per stud on the canvas
+	const W = canvas.width, H = canvas.height;
+
+	let player, dummies, swingState, bucket, effects, stats;
+
+	function reset() {
+		player = { x: W / 2 / STUD, y: H / 2 / STUD + 1.5, face: { x: 0, y: -1 } };
+		dummies = [
+			{ name: "Dummy A", x: player.x - 4.2, y: player.y - 4.4, hp: 120, max: 120, flash: 0 },
+			{ name: "Dummy B", x: player.x + 0.3, y: player.y - 5.1, hp: 120, max: 120, flash: 0 },
+			{ name: "Dummy C", x: player.x + 5.6, y: player.y - 1.2, hp: 120, max: 120, flash: 0 },
+			{ name: "Dummy D", x: player.x - 1.5, y: player.y + 4.6, hp: 120, max: 120, flash: 0 },
+		];
+		swingState = { nextSwingAt: 0, comboIndex: 0, comboExpiresAt: 0 };
+		bucket = { tokens: NET.burst, at: now() };
+		effects = [];
+		stats = { sent: 0, accepted: 0, blocked: 0 };
+		logEl.innerHTML = "";
+		log("info", "Server started. Rules: 6 req/s, burst 3, cooldown 0.32s, range 6 studs, arc 100°.");
+		renderTally();
+	}
+
+	function now() { return performance.now() / 1000; }
+
+	function log(kind, text) {
+		const li = document.createElement("li");
+		const t = document.createElement("span");
+		t.className = "t";
+		t.textContent = now().toFixed(2).padStart(7, " ");
+		const m = document.createElement("span");
+		m.className = kind;
+		m.textContent = text;
+		li.append(t, m);
+		logEl.append(li);
+		while (logEl.children.length > 120) logEl.firstChild.remove();
+		logEl.scrollTop = logEl.scrollHeight;
+	}
+
+	function renderTally() {
+		sentEl.textContent = stats.sent;
+		accEl.textContent = stats.accepted;
+		blkEl.textContent = stats.blocked;
+	}
+
+	// RateLimiter.take
+	function take() {
+		const t = now();
+		bucket.tokens = Math.min(NET.burst, bucket.tokens + Math.max(0, t - bucket.at) * NET.rate);
+		bucket.at = t;
+		if (bucket.tokens < 1) return false;
+		bucket.tokens -= 1;
+		return true;
+	}
+
+	// Guard.record({ action = literal("Swing"), aim = vector3(0.5, 2) })
+	function validPayload(p) {
+		if (!p || typeof p !== "object" || Object.getPrototypeOf(p) !== Object.prototype) return "expected table";
+		for (const k of Object.keys(p)) if (k !== "action" && k !== "aim") return `unexpected key ${k}`;
+		if (p.action !== "Swing") return "action: value not allowed";
+		const a = p.aim;
+		if (!a || ![a.x, a.y].every(Number.isFinite)) return "aim: non-finite Vector3";
+		const mag = Math.hypot(a.x, a.y);
+		if (mag < 0.5 || mag > 2) return "aim: bad length";
+		return null;
+	}
+
+	// HitValidation.tryStartSwing
+	function tryStartSwing(t) {
+		if (t + NET.tolerance < swingState.nextSwingAt) return { ok: false };
+		const len = WEAPON.combo.length;
+		const index = (swingState.comboIndex === 0 || t > swingState.comboExpiresAt || swingState.comboIndex >= len) ? 1 : swingState.comboIndex + 1;
+		const finisher = index === len;
+		swingState.comboIndex = index;
+		swingState.comboExpiresAt = t + WEAPON.window;
+		swingState.nextSwingAt = t + WEAPON.cooldown + (finisher ? WEAPON.endLag : 0);
+		return { ok: true, index, damage: WEAPON.combo[index - 1], finisher };
+	}
+
+	function angleBetween(a, b) {
+		const la = Math.hypot(a.x, a.y), lb = Math.hypot(b.x, b.y);
+		if (la < 1e-6 || lb < 1e-6) return 180;
+		const dot = Math.max(-1, Math.min(1, (a.x * b.x + a.y * b.y) / (la * lb)));
+		return Math.acos(dot) * 180 / Math.PI;
+	}
+
+	// Server handler: same order as CombatService.onCombatRequest.
+	function handle(payload, quiet) {
+		stats.sent++;
+		if (!take()) { stats.blocked++; if (!quiet) log("no", "Dropped: rate limit"); return "rate"; }
+		const bad = validPayload(payload);
+		if (bad) { stats.blocked++; if (!quiet) log("no", `Dropped: bad payload (${bad})`); return "payload"; }
+		const swing = tryStartSwing(now());
+		if (!swing.ok) { stats.blocked++; if (!quiet) log("no", "Rejected: cooldown"); return "cooldown"; }
+
+		// resolveAim: trust client aim within 75° of the server's facing
+		const facing = angleBetween(player.face, payload.aim) <= 75 ? payload.aim : player.face;
+		player.face = { x: facing.x, y: facing.y };
+
+		const hits = [];
+		for (const d of dummies) {
+			if (d.hp <= 0) continue;
+			const to = { x: d.x - player.x, y: d.y - player.y };
+			const dist = Math.hypot(to.x, to.y);
+			if (dist <= WEAPON.range && (dist < 0.5 || angleBetween(facing, to) <= WEAPON.arc / 2)) hits.push({ d, dist });
+		}
+		hits.sort((a, b) => a.dist - b.dist);
+		hits.splice(4);
+		for (const { d } of hits) {
+			d.hp = Math.max(0, d.hp - swing.damage);
+			d.flash = 1;
+			effects.push({ kind: "dmg", x: d.x, y: d.y, text: String(swing.damage), gold: swing.finisher, life: 1 });
+			if (d.hp === 0) {
+				log("info", `${d.name} defeated. Respawning in 3s.`);
+				setTimeout(() => { d.hp = d.max; }, 3000);
+			}
+		}
+		effects.push({ kind: "swing", face: { ...facing }, life: 1, finisher: swing.finisher });
+		stats.accepted++;
+		const label = swing.finisher ? `finisher ${swing.index}/4` : `swing ${swing.index}/4`;
+		log("ok", hits.length
+			? `Accepted ${label}: hit ${hits.map(h => h.d.name).join(", ")} for ${swing.damage}`
+			: `Accepted ${label}: no target in range`);
+		return "ok";
+	}
+
+	function pointerToAim(ev) {
+		const r = canvas.getBoundingClientRect();
+		const x = (ev.clientX - r.left) / r.width * W / STUD;
+		const y = (ev.clientY - r.top) / r.height * H / STUD;
+		const v = { x: x - player.x, y: y - player.y };
+		const l = Math.hypot(v.x, v.y) || 1;
+		return { x: v.x / l, y: v.y / l };
+	}
+
+	canvas.addEventListener("pointerdown", (ev) => {
+		ev.preventDefault();
+		const aim = pointerToAim(ev);
+		// The client turns to face the pointer first, like a real character would.
+		player.face = aim;
+		handle({ action: "Swing", aim });
+		renderTally();
+	});
+
+	document.getElementById("spam").addEventListener("click", () => {
+		const results = { ok: 0, rate: 0, payload: 0, cooldown: 0 };
+		const junk = [
+			() => ({ action: "Swing", aim: { x: NaN, y: 1 } }),
+			() => ({ action: "Swing", aim: { x: 0, y: -1 }, damage: 9999 }),
+			() => ({ action: "Kill", aim: { x: 0, y: -1 } }),
+		];
+		for (let i = 0; i < 200; i++) {
+			const payload = i % 10 === 9 ? junk[i % 3]() : { action: "Swing", aim: { ...player.face } };
+			results[handle(payload, true)]++;
+		}
+		log("no", `Exploit burst: 200 requests. Accepted ${results.ok}, rate-limited ${results.rate}, bad payload ${results.payload}, cooldown ${results.cooldown}.`);
+		renderTally();
+	});
+	document.getElementById("reset").addEventListener("click", reset);
+
+	/* ---- drawing ---- */
+	function drawStuds() {
+		ctx.fillStyle = "#BDBCBF";
+		ctx.fillRect(0, 0, W, H);
+		for (let x = STUD / 2; x < W; x += STUD) {
+			for (let y = STUD / 2; y < H; y += STUD) {
+				ctx.beginPath();
+				ctx.arc(x, y, 5.5, 0, Math.PI * 2);
+				ctx.fillStyle = "#C9C8CB";
+				ctx.fill();
+				ctx.beginPath();
+				ctx.arc(x + 0.8, y + 1, 5.5, 0, Math.PI * 2);
+				ctx.strokeStyle = "rgba(99,95,98,.28)";
+				ctx.lineWidth = 1;
+				ctx.stroke();
+			}
+		}
+	}
+
+	function block(px, py, size, fill) {
+		const s = size * STUD;
+		ctx.fillStyle = "rgba(27,42,53,.18)";
+		roundRect(px - s / 2 + 3, py - s / 2 + 4, s, s, 6); ctx.fill();
+		ctx.fillStyle = fill;
+		roundRect(px - s / 2, py - s / 2, s, s, 6); ctx.fill();
+		ctx.strokeStyle = "#1B2A35"; ctx.lineWidth = 2; ctx.stroke();
+	}
+
+	function roundRect(x, y, w, h, r) {
+		ctx.beginPath();
+		ctx.moveTo(x + r, y);
+		ctx.arcTo(x + w, y, x + w, y + h, r);
+		ctx.arcTo(x + w, y + h, x, y + h, r);
+		ctx.arcTo(x, y + h, x, y, r);
+		ctx.arcTo(x, y, x + w, y, r);
+		ctx.closePath();
+	}
+
+	function frame() {
+		drawStuds();
+		const px = player.x * STUD, py = player.y * STUD;
+
+		// Range ring and current facing cone (faint), so the rules are visible.
+		const faceAngle = Math.atan2(player.face.y, player.face.x);
+		const half = WEAPON.arc / 2 * Math.PI / 180;
+		ctx.beginPath();
+		ctx.moveTo(px, py);
+		ctx.arc(px, py, WEAPON.range * STUD, faceAngle - half, faceAngle + half);
+		ctx.closePath();
+		ctx.fillStyle = "rgba(13,153,255,.10)";
+		ctx.fill();
+		ctx.strokeStyle = "rgba(13,153,255,.55)";
+		ctx.setLineDash([6, 6]); ctx.lineWidth = 1.5; ctx.stroke(); ctx.setLineDash([]);
+
+		// Swing flashes
+		for (const e of effects) {
+			if (e.kind !== "swing") continue;
+			const a = Math.atan2(e.face.y, e.face.x);
+			ctx.beginPath();
+			ctx.moveTo(px, py);
+			ctx.arc(px, py, WEAPON.range * STUD, a - half, a + half);
+			ctx.closePath();
+			ctx.fillStyle = e.finisher ? `rgba(245,205,48,${0.55 * e.life})` : `rgba(13,153,255,${0.35 * e.life})`;
+			ctx.fill();
+		}
+
+		// Dummies
+		for (const d of dummies) {
+			const dx = d.x * STUD, dy = d.y * STUD;
+			if (d.hp <= 0) {
+				ctx.globalAlpha = 0.35;
+				block(dx, dy, 1.6, "#A3A2A5");
+				ctx.globalAlpha = 1;
+				continue;
+			}
+			block(dx, dy, 1.6, d.flash > 0 ? `rgb(${163 + 92 * d.flash},${162 - 60 * d.flash},${165 - 60 * d.flash})` : "#A3A2A5");
+			// health bar
+			const w = 40;
+			ctx.fillStyle = "#1B2A35"; ctx.fillRect(dx - w / 2, dy - 30, w, 6);
+			ctx.fillStyle = d.hp / d.max > 0.35 ? "#4B974B" : "#C4281C";
+			ctx.fillRect(dx - w / 2 + 1, dy - 29, (w - 2) * d.hp / d.max, 4);
+		}
+
+		// Player
+		block(px, py, 1.8, "#F5CD30");
+		ctx.beginPath();
+		ctx.moveTo(px + player.face.x * 22, py + player.face.y * 22);
+		ctx.lineTo(px + player.face.x * 8 - player.face.y * 7, py + player.face.y * 8 + player.face.x * 7);
+		ctx.lineTo(px + player.face.x * 8 + player.face.y * 7, py + player.face.y * 8 - player.face.x * 7);
+		ctx.closePath();
+		ctx.fillStyle = "#1B2A35"; ctx.fill();
+
+		// Damage numbers
+		ctx.textAlign = "center";
+		for (const e of effects) {
+			if (e.kind !== "dmg") continue;
+			const rise = reduceMotion ? 0 : (1 - e.life) * 26;
+			ctx.font = `800 ${e.gold ? 26 : 22}px "Bricolage Grotesque", system-ui, sans-serif`;
+			ctx.lineWidth = 4;
+			ctx.strokeStyle = `rgba(27,42,53,${e.life})`;
+			ctx.strokeText(e.text, e.x * STUD, e.y * STUD - 38 - rise);
+			ctx.fillStyle = e.gold ? `rgba(245,205,48,${e.life})` : `rgba(255,255,255,${e.life})`;
+			ctx.fillText(e.text, e.x * STUD, e.y * STUD - 38 - rise);
+		}
+
+		// Cooldown ring around the player
+		const remaining = swingState.nextSwingAt - now();
+		if (remaining > 0) {
+			const total = WEAPON.cooldown + (swingState.comboIndex === WEAPON.combo.length ? WEAPON.endLag : 0);
+			ctx.beginPath();
+			ctx.arc(px, py, 28, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (remaining / total));
+			ctx.strokeStyle = "#C4281C"; ctx.lineWidth = 3; ctx.stroke();
+		}
+
+		// Age effects
+		for (const e of effects) e.life -= e.kind === "swing" ? 0.08 : 0.025;
+		effects = effects.filter(e => e.life > 0);
+		for (const d of dummies) d.flash = Math.max(0, d.flash - 0.08);
+
+		requestAnimationFrame(frame);
+	}
+
+	reset();
+	(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(frame));
+})();
+</script>
+</body>
+</html>
